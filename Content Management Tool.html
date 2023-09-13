@@ -2,18 +2,18 @@
 <html>
 <head>
   <title>Content Management Tool</title>
+  <link rel="stylesheet" href="styles.css">
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
     }
-
-    h1 {
-      margin-bottom: 20px;
-    }
-
-    form {
-      margin-bottom: 20px;
+    /* Create a container for the editor */
+    #editor-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
     }
 
     label {
@@ -28,7 +28,7 @@
     }
 
     input[type="submit"] {
-      padding: 10px 20px;
+      padding: 10px 10px;
       background-color: #337ab7;
       color: #fff;
       border: none;
@@ -41,6 +41,14 @@
 
     #detailsContainer h1 {
       font-size: 24px;
+      margin-bottom: 10px;
+    }
+    
+    #imageDropZone {
+      border: 2px dashed #000000;
+      border-radius: 5px;
+      padding: 20px;
+      cursor: pointer;
       margin-bottom: 10px;
     }
 
@@ -58,50 +66,84 @@
       margin-bottom: 10px;
     }
   </style>
-  <script>
-    // Access the form and register the form submission event
-    document.addEventListener('DOMContentLoaded', function() {
-      var form = document.querySelector('#blogForm');
-      form.addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent the form from submitting
-
-        // Retrieve the form values
-        var title = document.querySelector('#title').value;
-        var content = document.querySelector('#content').value;
-        var image = document.querySelector('#image').value;
-        var video = document.querySelector('#video').value;
-
-        // Display the filled details on the webpage
-        var detailsContainer = document.querySelector('#detailsContainer');
-        detailsContainer.innerHTML = `
-          <h1>Blog Details</h1>
-          <h2>Title: ${title}</h2>
-          <p>Content: ${content}</p>
-          <img src="C:\Users\HP\OneDrive\Desktop\pexels-pixabay-262508.jpg" alt="Blog Image">
-          <p>Video URL: ${video}</p>
-        `;
-      });
-    });
-  </script>
 </head>
 <body>
-  <h1>Content Management Tool</h1>
-  <form id="blogForm">
-    <label for="title">Title:</label>
-    <input type="text" id="title" name="title">
-
-    <label for="content">Content:</label>
-    <textarea id="content" name="content" rows="4"></textarea>
-
-    <label for="image">Image:</label>
-    <input type="text" id="image" name="image">
-
-    <label for="video">Video URL:</label>
-    <input type="text" id="video" name="video">
-
+  <center><h1>EXPLORATION ON YOUR FEED</h1>
+  <div id="editor-container">
+        <div id="editor">
+            <textarea id="textEditor" placeholder="Write your text here..."></textarea>
+            <div id="imageDropZone">
+                <p>Drag & Drop or Click to Upload an Image</p>
+                <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+            </div>
+            <input type="text" id="videoUrl" placeholder="Paste video URL...">
+            <button onclick="addText()">Add Text</button>
+            <button onclick="addImage()">Add Image</button>
+            <button onclick="addVideo()">Add Video</button>
+        </div>
     <input type="submit" value="Create Blog">
-  </form>
+  </center>
 
   <div id="detailsContainer"></div>
+  <div id="blogPost"></div>
+  <script>
+    function addText() 
+    {
+      const text = document.getElementById("textEditor").value;
+      const p = document.createElement("p");
+      p.textContent = text;
+      document.getElementById("blogPost").appendChild(p);
+    }
+    function addImage() 
+    {
+      const fileInput = document.getElementById("imageUpload");
+      const file = fileInput.files[0];
+      if (file) 
+      {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.alt = "Image";
+        document.getElementById("blogPost").appendChild(img);
+      }
+    }
+    function addVideo() 
+    {
+      const videoUrl = document.getElementById("videoUrl").value;
+      if (videoUrl) 
+      {
+        const video = document.createElement("iframe");
+        video.src = videoUrl;
+        video.width = "100%";
+        video.height = "315"; // You can adjust the height as needed
+        video.allowFullscreen = true;
+        document.getElementById("blogPost").appendChild(video);
+      }
+    }
+    // Handle drag-and-drop for images
+    const imageDropZone = document.getElementById("imageDropZone");
+    imageDropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      imageDropZone.style.border = "2px dashed #007bff"
+    });
+    imageDropZone.addEventListener("dragleave", () => {
+      imageDropZone.style.border = "2px dashed #ccc";
+    });
+    imageDropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      imageDropZone.style.border = "2px dashed #ccc";
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.alt = "Image";
+        document.getElementById("blogPost").appendChild(img);
+      }
+    });
+    // Clicking the drop zone opens the file input
+    imageDropZone.addEventListener("click", () => {
+      const fileInput = document.getElementById("imageUpload");
+      fileInput.click();
+    });
+  </script>
 </body>
 </html>
